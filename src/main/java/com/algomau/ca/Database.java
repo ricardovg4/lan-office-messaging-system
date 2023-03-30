@@ -31,7 +31,7 @@ public class Database {
     }
 
     // check if db folder exists, if not create it
-    public void createDbFolder(String folder) {
+    private void createDbFolder(String folder) {
         Path currentPath = Paths.get("");
         Path newFolderPath = currentPath.resolve(folder);
 
@@ -48,7 +48,8 @@ public class Database {
         }
     }
 
-    public void connect() {
+    // initiate db connection
+    private void connect() {
         try {
             Class.forName(DB_DRIVER);
             // connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
@@ -58,10 +59,12 @@ public class Database {
         }
     }
 
+    // will have two tables: users and messages
+
     /*
      * USERS
      */
-    public void createUsersTable() {
+    private void createUsersTable() {
         // SQL statement for creating a users table
         String createUsers = "CREATE TABLE IF NOT EXISTS users (\n"
                 + "	id integer PRIMARY KEY,\n"
@@ -86,6 +89,26 @@ public class Database {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public ArrayList<String> getUsers() {
+        ArrayList<String> users = new ArrayList<String>();
+
+        try {
+            Statement stmt = connection.createStatement();
+            String sql = "SELECT username FROM users";
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                String name = rs.getString("username");
+
+                users.add(name);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
     }
 
     public boolean authenticateUser(String username, String password) {
@@ -162,7 +185,7 @@ public class Database {
     /*
      * MESSAGES
      */
-    public void createMessagesTable() {
+    private void createMessagesTable() {
         // SQL statement for creating a messages table
         String createMessages = "CREATE TABLE IF NOT EXISTS messages (\n"
                 + "	id integer PRIMARY KEY,\n"

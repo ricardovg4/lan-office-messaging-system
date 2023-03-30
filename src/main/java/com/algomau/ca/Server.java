@@ -1,25 +1,25 @@
 package com.algomau.ca;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import java.rmi.*;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.*;
 
 public class Server {
+    private static String ip = "localhost";
 
     public static void main(String args[]) {
-        Database db = new Database();
-        User brad = new User("brad", "password");
-        db.insertUser(brad, 0);
-        System.out.println(
-                db.authenticateUser("bradi", "password"));
+        try {
+            Chat server = new Chat();
+            ChatInterface serv_stub = (ChatInterface)
 
-        Message m = new Message("bradi", "bradi", "Hello there.", false);
-        db.storeMessage(m);
-        db.storeMessage(m);
-        db.storeMessage(m);
-        db.storeMessage(m);
+            UnicastRemoteObject.exportObject((Chat) server, 0);
+            LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
+            Naming.bind("rmi://" + ip + ":1099/IDS", serv_stub);
+            System.out.println("Server running...");
 
-        // List<Message> messages = db.getMessages(brad);
-        // messages.forEach((n) -> System.out.println(n.getTimestamp() + "\t" + n.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -10,6 +10,5 @@ OR
 ./mvnw clean dependency:copy-dependencies package
 
 
-
 ##To run:
 java -jar target/loms-1.0-SNAPSHOT.jar
