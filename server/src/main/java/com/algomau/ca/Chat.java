@@ -74,9 +74,12 @@ public class Chat implements ChatInterface {
         try {
             // add to connected clients list if online
             if (online) {
-                connectedClients.add(user.getUsername());
-            // remove from connected clients list if offline
-            } else if (!online){
+                // only add if not connected
+                if (!connectedClients.contains(user.getUsername())) {
+                    connectedClients.add(user.getUsername());
+                }
+                // remove from connected clients list if offline
+            } else if (!online) {
                 connectedClients.remove(user.getUsername());
             }
 

@@ -165,9 +165,9 @@ public class Database {
     public boolean updateOnline(String username, boolean online) {
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE users SET online = (online) WHERE username = (username) VALUES (?, ?)");
-            statement.setString(1, username);
-            statement.setString(2, online ? "1" : "0");
+                    "UPDATE users SET online = ? WHERE username = ?");
+            statement.setString(1, online ? "1" : "0");
+            statement.setString(2, username);
             statement.executeUpdate();
 
             return true;
