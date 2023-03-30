@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Chat implements ChatInterface {
-    private ArrayList<String> clients;
+    private List<String> clients;
     private List<User> connectedClients;
     private Database db;
 
-    public Chat(){
+    public Chat() {
         db = new Database();
         clients = db.getUsers();
     }
@@ -21,13 +21,23 @@ public class Chat implements ChatInterface {
         return store_message;
     }
 
-    public List<Message> getMessages(User user) throws RemoteException{
+    public List<Message> getMessages(User user) throws RemoteException {
         return db.getMessages(user);
     }
 
-    public boolean registerUser(User user) throws RemoteException {
+    public boolean registerUser(UserInterface user) throws RemoteException {
+        try {
+            db.insertUser(user, 0);
+            clients.add(user.getUsername());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return true;
     }
 
+    public List<String> getClients() throws RemoteException {
+        return clients;
+    }
 
 }

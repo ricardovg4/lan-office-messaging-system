@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.rmi.RemoteException;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -126,7 +127,7 @@ public class Database {
         return false;
     }
 
-    public void insertUser(User user, int status) {
+    public void insertUser(UserInterface user, int status) throws RemoteException {
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO users (username, password, status) VALUES (?, ?, ?)");
@@ -224,7 +225,7 @@ public class Database {
         return false;
     }
 
-    public List<Message> getMessages(User user) {
+    public List<Message> getMessages(User user) throws RemoteException{
         List<Message> messages = new ArrayList<Message>();
 
         try {
