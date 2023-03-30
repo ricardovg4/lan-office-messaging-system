@@ -71,7 +71,8 @@ public class Database {
                 + "	id integer PRIMARY KEY,\n"
                 + "	username text UNIQUE NOT NULL,\n"
                 + "	password text NOT NULL,\n"
-                + "	status integer NOT NULL\n"
+                + "	online integer NOT NULL,\n"
+                + "	status text NOT NULL\n"
                 + ");";
 
         try {
@@ -112,6 +113,26 @@ public class Database {
         return users;
     }
 
+    public ArrayList<String> getConnectedUsers() {
+        ArrayList<String> users = new ArrayList<String>();
+
+        try {
+            Statement stmt = connection.createStatement();
+            String sql = "SELECT username FROM users WHERE online = 1";
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                String name = rs.getString("username");
+
+                users.add(name);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
+
     public boolean authenticateUser(String username, String password) {
         try {
             PreparedStatement statement = connection.prepareStatement(
@@ -127,24 +148,42 @@ public class Database {
         return false;
     }
 
-    public void insertUser(UserInterface user, int status) throws RemoteException {
+    public void insertUser(UserInterface user) throws RemoteException {
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO users (username, password, status) VALUES (?, ?, ?)");
+                    "INSERT INTO users (username, password, online, status) VALUES (?, ?, ?, ?)");
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
-            statement.setString(3, Integer.toString(status));
+            statement.setString(3, "0");
+            statement.setString(4, "");
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public boolean updateUserStatus(String username, String status) {
+    public boolean updateOnline(String username, boolean online) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE users SET online = (online) WHERE username = (username) VALUES (?, ?)");
+            statement.setString(1, username);
+            statement.setString(2, online ? "1" : "0");
+            statement.executeUpdate();
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+
+    }
+
+    public boolean updateStatus(String username, String status) {
         try {
             PreparedStatement statement = connection.prepareStatement(
                     "UPDATE users SET status = (status) WHERE username = (username) VALUES (?, ?)");
             statement.setString(1, username);
+            statement.setString(2, status);
             statement.executeUpdate();
 
             return true;

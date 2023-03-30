@@ -13,7 +13,7 @@ public class Server {
             Chat server = new Chat();
             ChatInterface serv_stub = (ChatInterface)
 
-            UnicastRemoteObject.exportObject((Chat) server, 0);
+            UnicastRemoteObject.exportObject(server, 0);
             LocateRegistry.createRegistry(Registry.REGISTRY_PORT);
             Naming.bind("rmi://" + ip + ":1099/IDS", serv_stub);
             System.out.println("Server running...");
