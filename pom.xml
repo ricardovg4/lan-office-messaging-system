@@ -8,10 +8,16 @@
     <groupId>com.algomau.ca</groupId>
     <artifactId>loms</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <name>loms</name>
     <!-- FIXME change it to the project's website -->
     <url>http://www.example.com</url>
+
+    <modules>
+        <module>client</module>
+        <module>server</module>
+    </modules>
 
 
     <properties>
@@ -72,13 +78,13 @@
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.0.2</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.algomau.ca.Server</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
+                <!-- <configuration> -->
+                <!--     <archive> -->
+                <!--         <manifest> -->
+                <!--             <mainClass>com.algomau.ca.Server</mainClass> -->
+                <!--         </manifest> -->
+                <!--     </archive> -->
+                <!-- </configuration> -->
             </plugin>
         </plugins>
     </build>
