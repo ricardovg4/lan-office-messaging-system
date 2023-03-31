@@ -16,10 +16,16 @@ public class Chat implements ChatInterface {
     }
 
     // sends a message
-    public boolean sendMessage(Message message) throws RemoteException {
-        boolean store_message = db.storeMessage(message);
+    public boolean sendMessage(MessageInterface message) throws RemoteException {
+        try {
+            boolean store_message = db.storeMessage(message);
+            return store_message;
+
         // insert rmi send to respective client after storing
-        return store_message;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     public List<Message> getMessages(User user) throws RemoteException {

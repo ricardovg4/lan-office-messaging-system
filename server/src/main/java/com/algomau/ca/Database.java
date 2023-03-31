@@ -244,7 +244,7 @@ public class Database {
         }
     }
 
-    public boolean storeMessage(Message message) {
+    public boolean storeMessage(MessageInterface message) throws RemoteException{
         try {
             PreparedStatement statement = connection
                     .prepareStatement(
@@ -264,7 +264,7 @@ public class Database {
         return false;
     }
 
-    public List<Message> getMessages(User user) throws RemoteException{
+    public List<Message> getMessages(User user) throws RemoteException {
         List<Message> messages = new ArrayList<Message>();
 
         try {
@@ -277,14 +277,13 @@ public class Database {
             // statement.executeUpdate();
 
             while (resultSet.next()) {
-                Message message = new Message();
 
-                message.setSender(resultSet.getString("sender"));
-                message.setReceiver(resultSet.getString("receiver"));
-                message.setMessage(resultSet.getString("message"));
+                String sender = resultSet.getString("sender");
+                String receiver = resultSet.getString("receiver");
+                String text = resultSet.getString("message");
                 LocalDateTime timestamp = LocalDateTime.parse(resultSet.getString("timestamp"));
-                message.setTimestamp(timestamp);
-                message.setRead(resultSet.getBoolean("read"));
+                Boolean read = resultSet.getBoolean("read");
+                Message message = new Message(sender, receiver, text, read, timestamp);
 
                 messages.add(message);
             }

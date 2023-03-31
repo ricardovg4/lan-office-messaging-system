@@ -13,7 +13,7 @@ public class Client {
         Scanner input = new Scanner(System.in);
         String userInput;
 
-        String menu = "This is the help menu...";
+        String help = "\nCommands: help, clients, online clients, message:<username>:<message> exit";
 
         UserInterface user = null;
 
@@ -27,7 +27,7 @@ public class Client {
 
                 // REGISTER NEW USER
                 if (userInput.equalsIgnoreCase("register")) {
-                // } else if (userInput == "login") {
+                    // } else if (userInput == "login") {
                     // get username and check if already exists in db
                     System.out.println("Enter username:");
                     username = input.nextLine().trim();
@@ -77,21 +77,39 @@ public class Client {
             // LOGGED IN
             System.out.println("Logged in!");
             System.out.println("Welcome " + user.getUsername());
-            System.out.println("Registered users are: ");
             server.updateUserOnline(user, true);
+            System.out.println(help);
 
             while (connected) {
                 userInput = input.nextLine().trim();
                 if (userInput.equalsIgnoreCase("help")) {
-                    System.out.println(menu);
+                    System.out.println(help);
                 } else if (userInput.equalsIgnoreCase("clients")) {
                     System.out.println(server.getClients());
                 } else if (userInput.equalsIgnoreCase("online clients")) {
                     System.out.println(server.getConnectedClients());
+
+                } else if (userInput.startsWith("message")) {
+                    String recipient = userInput.split(":")[1];
+
+                    // String recipient = userInput.substring(1, userInput.indexOf(":")).trim();
+                    // check if recipient exists
+                    if (!server.isUser(recipient)) {
+                        System.out.println(recipient + " doesn't exist");
+                    } else {
+                        // String text = userInput.substring(2, userInput.indexOf(":")).trim();
+                        String text = userInput.split(":")[2];
+                        MessageInterface message = new Message(user.getUsername(), recipient, text.trim(), false);
+                        server.sendMessage(message);
+                    }
+
                 } else if (userInput.equalsIgnoreCase("exit")) {
                     // remove user from connected
                     server.updateUserOnline(user, false);
                     input.close();
+                    connected = false;
+                    System.out.println("Goodbye");
+                    System.exit(0);
                 }
             }
         } catch (Exception e) {
