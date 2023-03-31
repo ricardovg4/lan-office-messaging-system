@@ -244,7 +244,7 @@ public class Database {
         }
     }
 
-    public boolean storeMessage(MessageInterface message) throws RemoteException{
+    public boolean storeMessage(MessageInterface message) throws RemoteException {
         try {
             PreparedStatement statement = connection
                     .prepareStatement(
@@ -264,7 +264,37 @@ public class Database {
         return false;
     }
 
-    public List<Message> getMessages(User user) throws RemoteException {
+    public List<MessageInterface> getMessages(UserInterface user, String contact) throws RemoteException {
+        List<MessageInterface> messages = new ArrayList<MessageInterface>();
+
+        try {
+            String query = "SELECT * FROM messages WHERE (receiver = ? OR receiver = ?) AND (sender = ? OR sender = ?)";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, user.getUsername());
+            statement.setString(2, contact);
+            statement.setString(3, user.getUsername());
+            statement.setString(4, contact);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+
+                String sender = resultSet.getString("sender");
+                String receiver = resultSet.getString("receiver");
+                String text = resultSet.getString("message");
+                LocalDateTime timestamp = LocalDateTime.parse(resultSet.getString("timestamp"));
+                Boolean read = resultSet.getBoolean("read");
+                Message message = new Message(sender, receiver, text, read, timestamp);
+
+                messages.add(message);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return messages;
+    }
+
+    public List<Message> getAllMessages(UserInterface user) throws RemoteException {
         List<Message> messages = new ArrayList<Message>();
 
         try {

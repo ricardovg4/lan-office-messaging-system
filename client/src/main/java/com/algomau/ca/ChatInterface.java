@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ChatInterface extends Remote{
     public boolean sendMessage(MessageInterface  message) throws RemoteException;
-    public List<Message> getMessages(User user) throws RemoteException;
+    public List<MessageInterface> getMessages(UserInterface user, String contact) throws RemoteException;
     public boolean registerUser(UserInterface user) throws RemoteException;
     public List<String> getClients() throws RemoteException;
     public List<String> getConnectedClients() throws RemoteException;

@@ -13,7 +13,7 @@ public class Client {
         Scanner input = new Scanner(System.in);
         String userInput;
 
-        String help = "\nCommands: help, clients, online clients, message:<username>:<message> exit";
+        String help = "\nCommands: help, clients, online clients, message:<username>:<message>, history:<username> exit";
 
         UserInterface user = null;
 
@@ -91,16 +91,40 @@ public class Client {
 
                 } else if (userInput.startsWith("message")) {
                     String recipient = userInput.split(":")[1];
-
-                    // String recipient = userInput.substring(1, userInput.indexOf(":")).trim();
                     // check if recipient exists
                     if (!server.isUser(recipient)) {
                         System.out.println(recipient + " doesn't exist");
                     } else {
-                        // String text = userInput.substring(2, userInput.indexOf(":")).trim();
                         String text = userInput.split(":")[2];
                         MessageInterface message = new Message(user.getUsername(), recipient, text.trim(), false);
                         server.sendMessage(message);
+                    }
+                } else if (userInput.startsWith("history")) {
+                    String recipient = userInput.split(":")[1];
+                    // check if recipient exists
+                    if (!server.isUser(recipient)) {
+                        System.out.println(recipient + " doesn't exist");
+                    } else {
+                        List<MessageInterface> messages;
+
+                        messages = server.getMessages(user, recipient);
+                        System.out.println(messages.size());
+                        // MessageInterface m = messages.get(0);
+                        // System.out.println(m.getMessage());
+
+                        messages.forEach(m -> {
+                            try {
+                                System.out.println("______________________________");
+                                System.out.println("sender:"+  m.getSender() );
+                                System.out.println("recipient:"+  m.getReceiver() );
+                                System.out.println("message:"+  m.getMessage() );
+                                System.out.println("timestamp:"+  m.getTimestamp() );
+                                System.out.println("______________________________");
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
+
                     }
 
                 } else if (userInput.equalsIgnoreCase("exit")) {

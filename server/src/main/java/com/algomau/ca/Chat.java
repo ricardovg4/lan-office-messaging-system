@@ -28,8 +28,8 @@ public class Chat implements ChatInterface {
         return false;
     }
 
-    public List<Message> getMessages(User user) throws RemoteException {
-        return db.getMessages(user);
+    public List<MessageInterface> getMessages(UserInterface user, String contact) throws RemoteException {
+        return db.getMessages(user, contact);
     }
 
     public boolean registerUser(UserInterface user) throws RemoteException {
