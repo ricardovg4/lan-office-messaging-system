@@ -13,6 +13,7 @@ import javafx.event.EventHandler;
 
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -42,24 +43,27 @@ public class Client extends Application{
 
     UserInterface user = null;
     
-    boolean isLogin;
+    public boolean isLogin;
     
-    BorderPane Mainpane;
+    public BorderPane mainPane;
+    
+    public int userIndex;
     
 	public void start(Stage primaryStage) {
 		this.screenX = 1280;
 		this.screenY = 720;
 		
 		//Create pane
-		this.Mainpane = new BorderPane();
+		this.mainPane = new BorderPane();
 		HBox infoText = new HBox();
 		this.info = new Label();
 		infoText.getChildren().add(this.info);
-		this.Mainpane.setCenter(mainScene());
-		this.Mainpane.setTop(infoText);
+		this.mainPane.setCenter(mainScene());
+		this.mainPane.setTop(infoText);
+		
 	    
 		//Create the scene and set in stage
-		this.scene = new Scene(this.Mainpane, this.screenX, this.screenY);
+		this.scene = new Scene(this.mainPane, this.screenX, this.screenY);
 		primaryStage.setTitle("LOMS");
 		primaryStage.setScene(scene);// Place scene in the stage
 		primaryStage.show(); //Display the stage
@@ -118,7 +122,7 @@ public class Client extends Application{
 		                
 		                this.server.updateUserOnline(this.user, true);
 		                info.setText(this.help);
-		                this.Mainpane.setLeft(UserList());
+		                this.mainPane.setLeft(UserList());
 					    
 					}else if(!this.server.authenticateUser(tmpUser)){
 						this.info.setText("Incorrect password");
@@ -149,7 +153,7 @@ public class Client extends Application{
 			            
 			            this.server.updateUserOnline(this.user, true);
 		                info.setText(this.help);
-		                this.Mainpane.setLeft(UserList());
+		                this.mainPane.setLeft(UserList());
 					}
 	            }
 			 catch (RemoteException e1) {
@@ -188,18 +192,48 @@ public class Client extends Application{
 		Button[] users = new Button[this.server.getClients().size()];
 		
 		for(int i = 0; i < this.server.getClients().size(); i++) {
-			
+			if(!this.server.getClients().get(i).equals(this.user.getUsername())) {
 				users[i] = new Button(this.server.getClients().get(i));
 				pane.getChildren().add(users[i]);
+			}
 			
 		}
 		for(int i = 0; i < users.length; i++) {
-			int index = i;
+			if(!this.server.getClients().get(i).equals(this.user.getUsername())) {
+			userIndex = i;
 			users[i].setOnAction(e -> {
-				System.out.println(users[index].getText());
+				this.mainPane.setCenter(ChatLog());
+				this.mainPane.setBottom(ChatBox());
 			});
+			}
 		}
 		
+		return pane;
+	}
+	
+	public Pane ChatLog() {
+		Pane pane = new Pane();
+		pane.setPadding(new Insets(25,25,25,25));
+		pane.setStyle("-fx-background-color: #999999;");
+		
+		return pane;
+	}
+	
+	public Pane ChatBox() {
+		Pane pane = new Pane();
+		pane.setPadding(new Insets(25,25,25,25));
+		pane.setStyle("-fx-background-color: #FFFFFF;");
+		
+		TextField chatBox = new TextField();
+		chatBox.setAlignment(Pos.TOP_LEFT);
+		chatBox.setPrefSize(1100, 150);
+		chatBox.setTranslateX(screenX- screenX*0.9);
+		
+		chatBox.setOnAction(e -> {
+			System.out.print(chatBox.getText());
+		});
+		
+		pane.getChildren().add(chatBox);
 		return pane;
 	}
 	
