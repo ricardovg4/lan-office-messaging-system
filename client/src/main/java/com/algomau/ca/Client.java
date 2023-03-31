@@ -37,6 +37,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 
 public class Client extends Application {
@@ -198,6 +199,7 @@ public class Client extends Application {
 
 	public VBox userPane;
 	public Button[] users;
+	public Circle[] status;
 
 	public VBox UserList() throws RemoteException {
 		this.userPane = new VBox();
@@ -205,15 +207,21 @@ public class Client extends Application {
 		this.userPane.setStyle("-fx-background-color: #336693;");
 
 		this.users = new Button[this.server.getClients().size()];
-
+		this.status = new Circle[this.server.getClients().size()];
+		
 		for (int i = 0; i < this.server.getClients().size(); i++) {
 			if (!this.server.getClients().get(i).equals(this.user.getUsername())) {
 				this.users[i] = new Button(this.server.getClients().get(i));
-				this.userPane.getChildren().add(users[i]);
+				this.status[i] = new Circle();
+				this.status[i].setTranslateX(users[i].getTranslateX() + 80);
+				this.status[i].setTranslateY(users[i].getTranslateY() - 20);
+				this.status[i].setRadius(7);;
+				this.status[i].setFill(Color.RED);
+				this.userPane.getChildren().addAll(users[i], status[i]);
 			}
-
+			
 		}
-
+		IsOnline();
 		for (int i = 0; i < this.users.length; i++) {
 			if (!this.server.getClients().get(i).equals(this.user.getUsername())) {
 				String otherUser = new String(this.server.getClients().get(i));
@@ -232,6 +240,19 @@ public class Client extends Application {
 
 		}
 		return this.userPane;
+	}
+
+	public void IsOnline() throws RemoteException {
+		for (int i = 0; i < this.server.getConnectedClients().size(); i++) {
+			for (int j = 0; j < this.server.getClients().size(); j++) {
+				if(this.server.getClients().get(j).equals(this.server.getConnectedClients().get(i)) ) {
+					//if(status[i] != null)
+						//this.status[i].setFill(Color.GREEN);
+					//Not working
+				}
+			}
+		 
+		}
 	}
 
 	public int totalUsers;
