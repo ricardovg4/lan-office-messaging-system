@@ -193,6 +193,12 @@ public class Client extends Application{
 				pane.getChildren().add(users[i]);
 			
 		}
+		for(int i = 0; i < users.length; i++) {
+			int index = i;
+			users[i].setOnAction(e -> {
+				System.out.println(users[index].getText());
+			});
+		}
 		
 		return pane;
 	}
