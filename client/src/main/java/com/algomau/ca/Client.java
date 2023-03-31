@@ -7,22 +7,34 @@ import java.util.*;
 import java.rmi.Naming;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+
+import javafx.animation.Animation;
+import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 public class Client extends Application{
 	
@@ -50,6 +62,7 @@ public class Client extends Application{
     public int userIndex;
     
 	public void start(Stage primaryStage) {
+		
 		this.screenX = 1280;
 		this.screenY = 720;
 		
@@ -67,7 +80,9 @@ public class Client extends Application{
 		primaryStage.setTitle("LOMS");
 		primaryStage.setScene(scene);// Place scene in the stage
 		primaryStage.show(); //Display the stage
+		
 		ConnectToServer();
+		Update();
 	}
 	
 	public VBox mainScene() {
@@ -200,23 +215,66 @@ public class Client extends Application{
 		}
 		for(int i = 0; i < users.length; i++) {
 			if(!this.server.getClients().get(i).equals(this.user.getUsername())) {
-			userIndex = i;
+				this.userIndex = i;
 			users[i].setOnAction(e -> {
-				this.mainPane.setCenter(ChatLog());
+				try {
+					this.mainPane.setCenter(ChatLog());
+				} catch (RemoteException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				this.mainPane.setBottom(ChatBox());
+				
 			});
+			//this.userIndex = -1;
+			
 			}
 		}
 		
 		return pane;
 	}
 	
-	public Pane ChatLog() {
-		Pane pane = new Pane();
+	public Text lastMessage = null;
+	 
+	public ScrollPane ChatLog() throws RemoteException {
+		ScrollPane pane = new ScrollPane();
 		pane.setPadding(new Insets(25,25,25,25));
 		pane.setStyle("-fx-background-color: #999999;");
+		pane.setPannable(true);
 		
-		return pane;
+		Pane secondaryPane = new Pane();
+
+		 List<MessageInterface> messages;
+
+         messages = server.getMessages(this.user, this.server.getClients().get(userIndex));
+    
+         messages.forEach(m -> {
+             try {
+            	 Text currentMessage = new Text();
+            			 currentMessage = new Text(m.getSender() + "\n" + m.getMessage() + "\n" + m.getTimestamp());
+            			 if(this.lastMessage != null) {
+            				 currentMessage.setTranslateX(this.lastMessage.getTranslateX());
+            				 currentMessage.setTranslateY((this.lastMessage.getTranslateY()+ 50));
+            				 System.out.println("second");
+            			 }
+            			 else {
+            				 System.out.println("first");
+            				 currentMessage.setTranslateX(200);
+            				 currentMessage.setTranslateY(50);
+            			 }
+
+           
+            		 this.lastMessage = currentMessage;
+            		secondaryPane.getChildren().add(currentMessage);
+            	
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+         });
+         this.lastMessage = null;
+         pane.setContent(secondaryPane);
+		
+		return pane; //////INCOMPLETE!
 	}
 	
 	public Pane ChatBox() {
@@ -230,11 +288,46 @@ public class Client extends Application{
 		chatBox.setTranslateX(screenX- screenX*0.9);
 		
 		chatBox.setOnAction(e -> {
-			System.out.print(chatBox.getText());
+			MessageInterface message;
+			try {
+				message = new Message(user.getUsername(), this.server.getClients().get(userIndex), chatBox.getText(), false);
+				server.sendMessage(message);
+				chatBox.clear();
+				
+			} catch (RemoteException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+           
 		});
 		
 		pane.getChildren().add(chatBox);
 		return pane;
+	}
+	
+	public void Update() { //INCOMPLETE
+		KeyFrame refreshChat = new KeyFrame(
+		        Duration.seconds(0.25),
+		        event -> {
+		        	//try {
+						//if(userIndex > 0) {
+							//System.out.println("refreshed chat");
+							//this.mainPane.setCenter(ChatLog());
+						//}
+					//} catch (RemoteException e) {
+						// TODO Auto-generated catch block
+					//	e.printStackTrace();
+					//}
+		        }
+		);
+		
+		 Timeline timeline = new Timeline(
+	                refreshChat
+	        );
+	        timeline.setCycleCount(Animation.INDEFINITE);
+	        timeline.play();
+	        
+	  
 	}
 	
     public void ConnectToServer() {
@@ -245,6 +338,7 @@ public class Client extends Application{
         } catch (Exception e) {
         e.printStackTrace();
         }
+        
 	/*
         try {
             ChatInterface server = (ChatInterface) Naming.lookup("rmi://" + ip + ":1099/IDS");
@@ -369,5 +463,10 @@ public class Client extends Application{
             e.printStackTrace();
         }
 */
+        
     }
+    
     }
+
+ 
+
