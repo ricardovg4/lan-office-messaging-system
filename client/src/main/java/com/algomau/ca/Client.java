@@ -221,7 +221,7 @@ public class Client extends Application {
 			}
 			
 		}
-		IsOnline();
+		//IsOnline(); 
 		for (int i = 0; i < this.users.length; i++) {
 			if (!this.server.getClients().get(i).equals(this.user.getUsername())) {
 				String otherUser = new String(this.server.getClients().get(i));
@@ -271,7 +271,9 @@ public class Client extends Application {
 	public VBox messagePane;
 	public BorderPane backgroundPane;
 	public ScrollPane mainScrollPane;
-
+	public MessageInterface lastMsgInter;
+	
+	
 	public ScrollPane ChatLog() throws RemoteException {
 		this.mainScrollPane = new ScrollPane();
 		this.mainScrollPane.setPadding(new Insets(25, 25, 25, 25));
@@ -294,10 +296,7 @@ public class Client extends Application {
 
 		return mainScrollPane;
 	}
-
-	public boolean isUser;
-	public boolean lastUser;
-	public MessageInterface lastMsgInter;
+	
 	public void getMessages(List<MessageInterface> messages, VBox messagePane, BorderPane backgroundPane)
 			throws RemoteException {
 		
@@ -436,6 +435,9 @@ public class Client extends Application {
 			e.printStackTrace();
 		}
 
+	}
+
+}
 		/*
 		 * try { ChatInterface server = (ChatInterface) Naming.lookup("rmi://" + ip +
 		 * ":1099/IDS"); System.out.println("Connected to the server");
@@ -516,6 +518,3 @@ public class Client extends Application {
 		 * e) { e.printStackTrace(); }
 		 */
 
-	}
-
-}
