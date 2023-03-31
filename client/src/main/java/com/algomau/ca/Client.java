@@ -225,7 +225,7 @@ public class Client extends Application {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-					this.mainPane.setBottom(ChatBox());
+					this.mainPane.setBottom(SendMessage());
 
 				});
 			}
@@ -341,7 +341,7 @@ public class Client extends Application {
 		}
 	}
 
-	public Pane ChatBox() {
+	public Pane SendMessage() {
 		Pane pane = new Pane();
 		pane.setPadding(new Insets(25, 25, 25, 25));
 		pane.setStyle("-fx-background-color: #FFFFFF;");
@@ -358,11 +358,10 @@ public class Client extends Application {
 					message = new Message(user.getUsername(), this.server.getClients().get(userIndex),
 							chatBox.getText(), false);
 					server.sendMessage(message);
+					this.mainPane.setCenter(ChatLog());
 
 				}
 				chatBox.clear();
-
-				appendToScrollPane(this.mainScrollPane);
 
 			} catch (RemoteException e1) {
 				// TODO Auto-generated catch block
