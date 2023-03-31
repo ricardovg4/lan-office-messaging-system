@@ -21,6 +21,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 public class Client extends Application{
 	
@@ -43,20 +44,22 @@ public class Client extends Application{
     
     boolean isLogin;
     
+    BorderPane Mainpane;
+    
 	public void start(Stage primaryStage) {
 		this.screenX = 1280;
 		this.screenY = 720;
 		
 		//Create pane
-		BorderPane pane = new BorderPane();
+		this.Mainpane = new BorderPane();
 		HBox infoText = new HBox();
 		this.info = new Label();
 		infoText.getChildren().add(this.info);
-	    pane.setCenter(mainScene());
-	    pane.setTop(infoText);
+		this.Mainpane.setCenter(mainScene());
+		this.Mainpane.setTop(infoText);
 	    
 		//Create the scene and set in stage
-		this.scene = new Scene(pane, this.screenX, this.screenY);
+		this.scene = new Scene(this.Mainpane, this.screenX, this.screenY);
 		primaryStage.setTitle("LOMS");
 		primaryStage.setScene(scene);// Place scene in the stage
 		primaryStage.show(); //Display the stage
@@ -112,6 +115,10 @@ public class Client extends Application{
 		                this.connected = true;
 		                this.info.setText("Welcome: " + username.getText());
 		                pane.getChildren().clear();
+		                
+		                this.server.updateUserOnline(this.user, true);
+		                info.setText(this.help);
+		                this.Mainpane.setLeft(UserList());
 					    
 					}else if(!this.server.authenticateUser(tmpUser)){
 						this.info.setText("Incorrect password");
@@ -139,6 +146,10 @@ public class Client extends Application{
 			            this.server.registerUser(user);
 			            this.connected = true;
 			            pane.getChildren().clear();
+			            
+			            this.server.updateUserOnline(this.user, true);
+		                info.setText(this.help);
+		                this.Mainpane.setLeft(UserList());
 					}
 	            }
 			 catch (RemoteException e1) {
@@ -167,8 +178,23 @@ public class Client extends Application{
 		pane.getChildren().addAll(login, register);
 		
 		return pane;
+	}
+	
+	public VBox UserList() throws RemoteException {
+		VBox pane = new VBox();
+		pane.setPadding(new Insets(25,25,25,25));
+		pane.setStyle("-fx-background-color: #336693;");
 		
+		Button[] users = new Button[this.server.getClients().size()];
 		
+		for(int i = 0; i < this.server.getClients().size(); i++) {
+			
+				users[i] = new Button(this.server.getClients().get(i));
+				pane.getChildren().add(users[i]);
+			
+		}
+		
+		return pane;
 	}
 	
     public void ConnectToServer() {
