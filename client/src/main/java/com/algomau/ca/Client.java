@@ -33,6 +33,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -261,9 +262,12 @@ public class Client extends Application {
 				String otherUser = new String(this.server.getClients().get(i));
 				this.users[i].setOnAction(e -> {
 					try {
+						
 						this.userIndex = this.server.getClients().indexOf(otherUser);
+						//this.users[this.userIndex].setStyle("-fx-font-weight: normal");
 						this.mainPane.setCenter(ChatLog());
 						this.info.setText("Chatting with: " + otherUser);
+						
 					} catch (RemoteException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -445,6 +449,7 @@ public class Client extends Application {
 					message = new Message(user.getUsername(), this.server.getClients().get(userIndex),
 							chatBox.getText(), false);
 					server.sendMessage(message);
+					//this.users[this.userIndex].setStyle("-fx-font-weight: bold");
 					this.mainPane.setCenter(ChatLog());
 
 				}
