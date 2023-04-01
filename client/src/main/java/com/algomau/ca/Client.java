@@ -90,6 +90,11 @@ public class Client extends Application {
 	}
 
 	public VBox mainScene() {
+		this.statusOptions = new ComboBox<String>();;
+		this.statusOptions.getItems().add("Online");
+		this.statusOptions.getItems().add("Away");
+		this.statusOptions.getItems().add("Busy");
+		this.statusOptions.getSelectionModel().selectFirst();
 		VBox pane = new VBox();
 		pane.setPadding(new Insets(10, 10, 10, 10));
 		pane.setStyle("-fx-background-color: #336699;");
@@ -139,6 +144,7 @@ public class Client extends Application {
 						pane.getChildren().clear();
 
 						this.server.updateUserOnline(this.user, true);
+						this.server.updateUserStatus(this.user, this.statusOptions.getValue());
 						info.setText(this.help);
 						this.mainPane.setLeft(UserList());
 
@@ -168,6 +174,7 @@ public class Client extends Application {
 						pane.getChildren().clear();
 
 						this.server.updateUserOnline(this.user, true);
+						this.server.updateUserStatus(this.user, this.statusOptions.getValue());
 						info.setText(this.help);
 						this.mainPane.setLeft(UserList());
 					}
@@ -248,7 +255,7 @@ public class Client extends Application {
 			}
 			
 		}
-		//IsOnline(); 
+		
 		for (int i = 0; i < this.users.length; i++) {
 			if (!this.server.getClients().get(i).equals(this.user.getUsername())) {
 				String otherUser = new String(this.server.getClients().get(i));
@@ -270,15 +277,17 @@ public class Client extends Application {
 		
 		setStatus();
 		this.userPaneBackGround.setContent(userPane);
+		IsOnline(); 
 		return this.userPaneBackGround;
 	}
-	
-	public void setStatus() {
+	public ComboBox<String> statusOptions;
+	public void setStatus() throws RemoteException {
 		this.statusPane = new VBox();
-		ComboBox<String> statusOptions = new ComboBox();
+		statusOptions = new ComboBox<String>();
 		statusOptions.getItems().add("Online");
 		statusOptions.getItems().add("Away");
 		statusOptions.getItems().add("Busy");
+		this.statusOptions.getSelectionModel().selectFirst();
 		this.statusPane.getChildren().add(statusOptions);
 		this.userPane.getChildren().add(statusPane);
 		
@@ -291,24 +300,26 @@ public class Client extends Application {
 				e1.printStackTrace();
 			}
 		});
+		IsOnline(); 
 	}
 
 	public void IsOnline() throws RemoteException {
 			for (int i = 0; i < this.server.getClients().size(); i++) {
-				
-				/*switch(this.server.getStatus(this.server.getClients().get(i))) {
+				if(status[i] != null) {
+				switch(this.server.getUserStatus(this.server.getClients().get(i))) {
 				  case "Online":
-				    // code block
+				    this.status[i].setFill(Color.GREEN);
 				    break;
 				  case "Away":
-				    // code block
+				    this.status[i].setFill(Color.YELLOW);
 				    break;
 				   case "Busy":
-					    // code block
+					    this.status[i].setFill(Color.BLUE);
 					    break;
 				  default:
-				    // code block
-				}*/
+				    this.status[i].setFill(Color.RED);
+				}
+				}
 			}
 		
 	}
@@ -361,7 +372,6 @@ public class Client extends Application {
 		
 		
 		messagePane = new VBox();
-		// messagePane.setStyle("-fx-background-color: #0000FF;");
 		VBox pane = messagePane;
 		if (this.userIndex > -1) {
 			messages = this.server.getMessages(this.user, this.server.getClients().get(userIndex));
@@ -372,8 +382,6 @@ public class Client extends Application {
 		
 		
 		if (messages != null) {
-			// messages = server.getMessages(this.user,
-			// this.server.getClients().get(userIndex));
 			messages.forEach(m -> {
 				try {
 					Text currentMessage = new Text();
@@ -453,6 +461,12 @@ public class Client extends Application {
 		return pane;
 	}
 
+		/*public void CheckNewMessages() {
+			for (int i = 0; i < this.server.getClients().size(); i++) {
+			
+			}
+		}*/
+			
 	public void appendToScrollPane(ScrollPane scrollPane) {
 		// ... actions which add content to the scroll pane ...
 
@@ -465,16 +479,24 @@ public class Client extends Application {
 	}
 
 	public void Update() { // INCOMPLETE
-		KeyFrame refreshChat = new KeyFrame(Duration.seconds(0.1), event -> {
+		KeyFrame refreshChat = new KeyFrame(Duration.seconds(1), event -> {
 			if (userIndex > -1) {
-				// System.out.println("refreshed chat");
 				try {
 					getMessages(this.messages, this.messagePane, this.backgroundPane);
 					CheckUserList();
+					
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			}
+			
+			try {
+				if(this.user != null)
+					IsOnline();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 
 		});
@@ -489,11 +511,12 @@ public class Client extends Application {
 	public void stop() {
 		try {
 			this.server.updateUserStatus(this.user, "Offline");
+			System.out.print("Quit");
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.print("Quit");
+		
 		
 	}
 	
