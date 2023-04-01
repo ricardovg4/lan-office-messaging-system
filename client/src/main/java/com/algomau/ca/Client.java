@@ -23,6 +23,7 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
@@ -197,15 +198,17 @@ public class Client extends Application {
 		return pane;
 	}
 
+	public ScrollPane userPaneBackGround;
 	public VBox userPane;
 	public Button[] users;
 	public Circle[] status;
-
-	public VBox UserList() throws RemoteException {
+	public VBox statusPane;
+	public ScrollPane UserList() throws RemoteException {
 		this.userPane = new VBox();
 		this.userPane.setPadding(new Insets(25, 25, 25, 25));
 		this.userPane.setStyle("-fx-background-color: #336693;");
-
+		this.userPaneBackGround = new ScrollPane();
+		
 		TextField searchBar = new TextField();
 		Label searchLabel = new Label();
 		searchLabel.setText("Search for User");
@@ -262,22 +265,52 @@ public class Client extends Application {
 
 				});
 			}
-
+			
 		}
-		return this.userPane;
+		
+		setStatus();
+		this.userPaneBackGround.setContent(userPane);
+		return this.userPaneBackGround;
+	}
+	
+	public void setStatus() {
+		this.statusPane = new VBox();
+		ComboBox<String> statusOptions = new ComboBox();
+		statusOptions.getItems().add("Online");
+		statusOptions.getItems().add("Away");
+		statusOptions.getItems().add("Busy");
+		this.statusPane.getChildren().add(statusOptions);
+		this.userPane.getChildren().add(statusPane);
+		
+		statusOptions.setOnAction(e -> {
+			try {
+				this.server.updateUserStatus(this.user, statusOptions.getValue());
+				System.out.println(statusOptions.getValue());
+			} catch (RemoteException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
 	}
 
 	public void IsOnline() throws RemoteException {
-		for (int i = 0; i < this.server.getConnectedClients().size(); i++) {
-			for (int j = 0; j < this.server.getClients().size(); j++) {
-				if(this.server.getClients().get(j).equals(this.server.getConnectedClients().get(i)) ) {
-					//if(status[i] != null)
-						//this.status[i].setFill(Color.GREEN);
-					//Not working
-				}
+			for (int i = 0; i < this.server.getClients().size(); i++) {
+				
+				/*switch(this.server.getStatus(this.server.getClients().get(i))) {
+				  case "Online":
+				    // code block
+				    break;
+				  case "Away":
+				    // code block
+				    break;
+				   case "Busy":
+					    // code block
+					    break;
+				  default:
+				    // code block
+				}*/
 			}
-		 
-		}
+		
 	}
 
 	public int totalUsers;
@@ -321,6 +354,7 @@ public class Client extends Application {
 
 		return mainScrollPane;
 	}
+	
 	
 	public void getMessages(List<MessageInterface> messages, VBox messagePane, BorderPane backgroundPane)
 			throws RemoteException {
@@ -451,6 +485,18 @@ public class Client extends Application {
 
 	}
 
+	@Override
+	public void stop() {
+		try {
+			this.server.updateUserStatus(this.user, "Offline");
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.print("Quit");
+		
+	}
+	
 	public void ConnectToServer() {
 		// if on lan, insert IP of server
 		try {
