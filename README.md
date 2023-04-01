@@ -18,5 +18,3 @@ java -jar server/target/server-1.0-SNAPSHOT.jar
 To run the client, javafx passes through Eclipse, the javafx libraries need to be added, and the VM command to run the config as follows:
 
 --module-path "insert path here" --add-modules=javafx.controls,javafx.fxml
-
-java -jar client/target/client-1.0-SNAPSHOT.jar
