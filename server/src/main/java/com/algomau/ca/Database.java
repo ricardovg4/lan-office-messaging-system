@@ -133,6 +133,23 @@ public class Database {
         return users;
     }
 
+    public String getUserStatus(String username) {
+        String status = "";
+        try {
+            String sql = "SELECT status FROM users WHERE username = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, username);
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                status = rs.getString("status");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return status;
+    }
+
     public boolean authenticateUser(String username, String password) {
         try {
             PreparedStatement statement = connection.prepareStatement(
@@ -181,9 +198,9 @@ public class Database {
     public boolean updateStatus(String username, String status) {
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE users SET status = (status) WHERE username = (username) VALUES (?, ?)");
-            statement.setString(1, username);
-            statement.setString(2, status);
+                    "UPDATE users SET status = ? WHERE username = ?");
+            statement.setString(1, status);
+            statement.setString(2, username);
             statement.executeUpdate();
 
             return true;

@@ -21,7 +21,7 @@ public class Chat implements ChatInterface {
             boolean store_message = db.storeMessage(message);
             return store_message;
 
-        // insert rmi send to respective client after storing
+            // insert rmi send to respective client after storing
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,5 +97,10 @@ public class Chat implements ChatInterface {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public String getUserStatus(String user) throws RemoteException {
+        String status = db.getUserStatus(user);
+        return status;
     }
 }

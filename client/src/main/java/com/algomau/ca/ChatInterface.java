@@ -14,4 +14,5 @@ public interface ChatInterface extends Remote{
     public boolean authenticateUser(UserInterface user) throws RemoteException;
     public boolean updateUserStatus(UserInterface user, String status) throws RemoteException;
     public boolean updateUserOnline(UserInterface user, boolean online) throws RemoteException;
+    public String getUserStatus(String user) throws RemoteException;
 }
