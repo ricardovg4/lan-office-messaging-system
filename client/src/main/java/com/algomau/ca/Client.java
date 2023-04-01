@@ -55,7 +55,7 @@ public class Client extends Application {
 	public Scanner input = new Scanner(System.in);
 	public String userInput;
 
-	public String help = "\nCommands: help, clients, online clients, message:<username>:<message> exit";
+	public String help = "Send a message to a User on this list";
 
 	UserInterface user = null;
 
@@ -206,6 +206,30 @@ public class Client extends Application {
 		this.userPane.setPadding(new Insets(25, 25, 25, 25));
 		this.userPane.setStyle("-fx-background-color: #336693;");
 
+		TextField searchBar = new TextField();
+		Label searchLabel = new Label();
+		searchLabel.setText("Search for User");
+		this.userPane.getChildren().addAll(searchLabel, searchBar);
+		
+		searchBar.setOnAction(e -> {
+			
+			try {
+				if(this.server.isUser(searchBar.getText()) && searchBar.getText() != this.user.getUsername()){
+					this.mainPane.setCenter(ChatLog());
+					this.mainPane.setBottom(SendMessage());
+					this.userIndex = this.server.getClients().indexOf(searchBar.getText());
+					appendToScrollPane(this.mainScrollPane);
+					this.info.setText("Chatting with: " + searchBar.getText());
+				}
+				else {
+					this.info.setText("User Not found");
+				}
+			} catch (RemoteException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+		
 		this.users = new Button[this.server.getClients().size()];
 		this.status = new Circle[this.server.getClients().size()];
 		
@@ -229,6 +253,7 @@ public class Client extends Application {
 					try {
 						this.userIndex = this.server.getClients().indexOf(otherUser);
 						this.mainPane.setCenter(ChatLog());
+						this.info.setText("Chatting with: " + otherUser);
 					} catch (RemoteException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
