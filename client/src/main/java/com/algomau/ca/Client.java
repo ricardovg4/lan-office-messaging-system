@@ -362,9 +362,10 @@ public class Client extends Application {
 		this.messagePane.setStyle("-fx-background-color: #0000FF;");
 		this.backgroundPane = new BorderPane();
 
-		getMessages(this.messages, this.messagePane, this.backgroundPane);
+		
 
 		this.mainScrollPane.setContent(this.backgroundPane);
+		getMessages(this.messages, this.messagePane, this.backgroundPane);
 		appendToScrollPane(this.mainScrollPane);
 
 		return mainScrollPane;
@@ -379,7 +380,6 @@ public class Client extends Application {
 		VBox pane = messagePane;
 		if (this.userIndex > -1) {
 			messages = this.server.getMessages(this.user, this.server.getClients().get(userIndex));
-			
 		} else {
 			messages = null;
 		}
