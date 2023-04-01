@@ -287,13 +287,13 @@ public class Client extends Application {
 	public ComboBox<String> statusOptions;
 	public void setStatus() throws RemoteException {
 		this.statusPane = new VBox();
-		statusOptions = new ComboBox<String>();
-		statusOptions.getItems().add("Online");
-		statusOptions.getItems().add("Away");
-		statusOptions.getItems().add("Busy");
+		this.statusOptions = new ComboBox<String>();
+		this.statusOptions.getItems().add("Online");
+		this.statusOptions.getItems().add("Away");
+		this.statusOptions.getItems().add("Busy");
 		this.statusOptions.getSelectionModel().selectFirst();
-		this.statusPane.getChildren().add(statusOptions);
-		this.userPane.getChildren().add(statusPane);
+		this.statusPane.getChildren().add(this.statusOptions);
+		this.userPane.getChildren().add(this.statusPane);
 		
 		statusOptions.setOnAction(e -> {
 			try {
@@ -309,7 +309,7 @@ public class Client extends Application {
 
 	public void IsOnline() throws RemoteException {
 			for (int i = 0; i < this.server.getClients().size(); i++) {
-				if(status[i] != null) {
+				if(this.status.length == this.server.getClients().size() && this.status[i] != null) {
 				switch(this.server.getUserStatus(this.server.getClients().get(i))) {
 				  case "Online":
 				    this.status[i].setFill(Color.GREEN);
